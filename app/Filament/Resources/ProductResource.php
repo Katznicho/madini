@@ -12,6 +12,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Forms\Components\MarkdownEditor;
 
 class ProductResource extends Resource
 {
@@ -24,26 +25,39 @@ class ProductResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('description')
-                    ->maxLength(255),
-                Forms\Components\FileUpload::make('image')
-                    ->image(),
-                Forms\Components\TextInput::make('price')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('category_id')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('cooperative_id')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('status')
-                    ->required()
-                    ->maxLength(255)
-                    ->default('active'),
+                Forms\Components\Section::make(
+                    fn ($context) =>
+                    $context === 'edit' ? 'Editing product' : ($context === 'create' ? 'Creating a new product' : 'Viewing product')
+                )
+                    ->description(fn ($context) => $context === 'edit' ? 'Editing an existing product record.' : ($context === 'create' ? 'Creating a new product record.' : 'Viewing a product record.'))
+                    ->schema([
+                        Forms\Components\TextInput::make('name')
+                        ->required()
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('price')
+                        ->required()
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('category_id')
+                        ->required()
+                        ->numeric(),
+                    Forms\Components\TextInput::make('cooperative_id')
+                        ->required()
+                        ->numeric(),
+                    Forms\Components\TextInput::make('status')
+                        ->required()
+                        ->maxLength(255)
+                        ->default('active'),
+                    MarkdownEditor::make('description')
+                        ->required()
+                        ->label("Description"),
+                    Forms\Components\FileUpload::make('product_image')
+                        ->directory('product')
+                        ->image()
+                        ->label('product Image')
+                        ->required(),
+                    ])
+
+                  
             ]);
     }
 

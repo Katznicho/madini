@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\CategoryResource\Pages;
 use App\Filament\Resources\CategoryResource\RelationManagers;
 use App\Models\Category;
+use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -13,6 +14,10 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Actions\CreateAction;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\MarkdownEditor;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\Indicator;
 
 class CategoryResource extends Resource
 {
@@ -22,18 +27,40 @@ class CategoryResource extends Resource
 
     protected static ?string $navigationGroup = 'Categories';
 
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ["name", "description"];
+    }
+
     public static function form(Form $form): Form
     {
-        
+
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('description')
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('logo')
-                    ->maxLength(255),
+                Forms\Components\Section::make(
+                    fn ($context) =>
+                    $context === 'edit' ? 'Editing category' : ($context === 'create' ? 'Creating a new category' : 'Viewing category')
+                )
+                    ->description(fn ($context) => $context === 'edit' ? 'Editing an existing category record.' : ($context === 'create' ? 'Creating a new category record.' : 'Viewing a category record.'))
+
+                    ->schema([
+                        Forms\Components\TextInput::make('name')
+                            ->required()
+                            ->maxLength(255),
+                        MarkdownEditor::make('description')
+                            ->required()
+                            ->label("Description"),
+                        // Forms\Components\TextInput::make('logo')
+                        //     ->label("Image")
+                        //     ->maxLength(255),
+                        Forms\Components\FileUpload::make('logo')
+                            ->directory('category')
+                            ->image()
+                            ->label('Category Image')
+                            ->required(),
+
+                    ])
+
             ]);
     }
 
@@ -41,12 +68,22 @@ class CategoryResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\ImageColumn::make('logo')
+                    ->label("Cover Image")
+                    ->circular(),
                 Tables\Columns\TextColumn::make('name')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable()
+                    ->label("Cooperative Name")
+                    ,
                 Tables\Columns\TextColumn::make('description')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('logo')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable()
+                    ->label("Description")
+                    ,
+
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -58,6 +95,42 @@ class CategoryResource extends Resource
             ])
             ->filters([
                 //
+                Filter::make('is_sponsored')
+                ->query(fn (Builder $query): Builder => $query->where('is_sponsored', true))
+                ->indicator(fn (Builder $query): int => $query->where('is_sponsored', true)->count())
+                ->toggle()
+                ->label('Sponsored'),
+            Filter::make('created_at')
+                ->form([
+                    DatePicker::make('created_from'),
+                    DatePicker::make('created_until'),
+                ])
+                ->query(function (Builder $query, array $data): Builder {
+                    return $query
+                        ->when(
+                            $data['created_from'],
+                            fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
+                        )
+                        ->when(
+                            $data['created_until'],
+                            fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
+                        );
+                })
+                ->indicateUsing(function (array $data): array {
+                    $indicators = [];
+
+                    if ($data['from'] ?? null) {
+                        $indicators[] = Indicator::make('Created from ' . Carbon::parse($data['from'])->toFormattedDateString())
+                            ->removeField('from');
+                    }
+
+                    if ($data['until'] ?? null) {
+                        $indicators[] = Indicator::make('Created until ' . Carbon::parse($data['until'])->toFormattedDateString())
+                            ->removeField('until');
+                    }
+
+                    return $indicators;
+                }),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),

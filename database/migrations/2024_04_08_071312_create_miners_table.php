@@ -16,6 +16,8 @@ return new class extends Migration
             $table->string('name');
             $table->string("phone_number");
             $table->string("email")->nullable();
+            $table->string("profile_picture")->nullable();
+            $table->string("gender")->nullable();
             $table->string("address")->nullable();
             $table->string("account_number");
             $table->string("status")->default("active");
