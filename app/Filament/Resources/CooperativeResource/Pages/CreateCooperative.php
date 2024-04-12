@@ -40,12 +40,14 @@ class CreateCooperative extends CreateRecord
             $lastUserId = User::orderBy('id', 'desc')->first();
             $lastUserId = $lastUserId->id ?? 0;
             $data['account_number'] = 'MA' . str_pad($lastUserId + 1, 8, '0', STR_PAD_LEFT);
-            User::create([
+            $user =  User::create([
                 'email' => $email,
                 'password' => Hash::make($email),
                 'name' => $data['name'],
                 'type' => 'cooperative',
             ]);
+
+            $data['user_id'] = $user->id;
             Mail::to($email)->send(new AccountCreation($name, $email));
         } catch (\Throwable $th) {
             //throw $th;

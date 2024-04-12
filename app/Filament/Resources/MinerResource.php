@@ -87,7 +87,7 @@ class MinerResource extends Resource
         return $table
 
             ->columns([
-                Tables\Columns\ImageColumn::make('logo')
+                Tables\Columns\ImageColumn::make('profile_picture')
                     ->label("Cover Image")
                     ->circular(),
                 Tables\Columns\TextColumn::make('name')

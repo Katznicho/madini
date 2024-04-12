@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string("website")->nullable();
             $table->string("account_number")->nullable();
             $table->string("address")->nullable();
+            $table->foreignId("user_id")->constrained()->onDelete("cascade");
             $table->timestamps();
         });
     }

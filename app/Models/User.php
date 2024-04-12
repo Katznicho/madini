@@ -63,4 +63,9 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
             'password' => 'hashed',
         ];
     }
+    //a user has a cooperative
+    public function cooperative()
+    {
+        return $this->hasOne(Cooperative::class);
+    }
 }

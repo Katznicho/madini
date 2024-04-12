@@ -23,6 +23,8 @@ class MinerResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    protected static ?string $navigationGroup = 'Miners';
+
     public static function getGloballySearchableAttributes(): array
     {
         return ["name", "description"];
@@ -54,13 +56,13 @@ class MinerResource extends Resource
                                     'female' => 'Female',
                                 ]
                             ),
-                        Forms\Components\Select::make('cooperative_id')
-                            ->relationship('cooperative', 'name')
-                            ->native(false)
-                            ->label("Select Cooperative")
-                            ->preload()
-                            ->searchable()
-                            ->required(),
+                        // Forms\Components\Select::make('cooperative_id')
+                        //     ->relationship('cooperative', 'name')
+                        //     ->native(false)
+                        //     ->label("Select Cooperative")
+                        //     ->preload()
+                        //     ->searchable()
+                        //     ->required(),
 
                         Forms\Components\TextInput::make('email')
                             ->email()
@@ -85,7 +87,7 @@ class MinerResource extends Resource
         return $table
 
             ->columns([
-                Tables\Columns\ImageColumn::make('logo')
+                Tables\Columns\ImageColumn::make('profile_picture')
                     ->label("Cover Image")
                     ->circular(),
                 Tables\Columns\TextColumn::make('name')
@@ -209,6 +211,7 @@ class MinerResource extends Resource
         return parent::getEloquentQuery()
             ->withoutGlobalScopes([
                 SoftDeletingScope::class,
-            ]);
+            ])
+            ->where('cooperative_id', auth()->user()->cooperative->id);
     }
 }

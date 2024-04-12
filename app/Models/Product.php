@@ -27,4 +27,10 @@ class Product extends Model
     {
         return $this->belongsTo(Category::class);
     }
+
+    //a product belongs to a cooperative
+    public function cooperative()
+    {
+        return $this->belongsTo(Cooperative::class);
+    }
 }

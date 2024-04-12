@@ -32,6 +32,7 @@ class CooperativePanelProvider extends PanelProvider
                 'primary' => Color::Amber,
             ])
             ->login()
+            ->passwordReset()
             ->plugins([
                 FilamentBackgroundsPlugin::make(),
                 \Hasnayeen\Themes\ThemesPlugin::make(),

@@ -23,11 +23,17 @@ class Cooperative extends Model
         'website',
         'account_number',
         'address',
+        'user_id'
     ];
 
     //a cooperative has many miners
     public function miners()
     {
         return $this->hasMany(Miner::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }
