@@ -18,4 +18,10 @@ class Category extends Model
         'description',
         'logo',
     ];
+
+    // a category has many products
+    public function products()
+    {
+        return $this->hasMany(Product::class);
+    }
 }

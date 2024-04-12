@@ -50,9 +50,6 @@ class CategoryResource extends Resource
                         MarkdownEditor::make('description')
                             ->required()
                             ->label("Description"),
-                        // Forms\Components\TextInput::make('logo')
-                        //     ->label("Image")
-                        //     ->maxLength(255),
                         Forms\Components\FileUpload::make('logo')
                             ->directory('category')
                             ->image()

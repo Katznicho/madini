@@ -8,15 +8,16 @@ use App\Models\Cooperative;
 use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\Indicator;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Filament\Forms\Components\MarkdownEditor;
-use Filament\Tables\Filters\Filter;
-use Filament\Tables\Filters\Indicator;
+use AbanoubNassem\FilamentPhoneField\Forms\Components\PhoneInput;
 
 class CooperativeResource extends Resource
 {
@@ -25,11 +26,6 @@ class CooperativeResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     protected static ?string $navigationGroup = 'Cooperatives';
-
-    public static function getGloballySearchableAttributes(): array
-    {
-        return ["name", "description"];
-    }
 
     public static function form(Form $form): Form
     {
@@ -44,32 +40,42 @@ class CooperativeResource extends Resource
                         Forms\Components\TextInput::make('name')
                             ->required()
                             ->maxLength(255),
-                        Forms\Components\TextInput::make('status')
-                            ->required()
-                            ->maxLength(255)
-                            ->default('active'),
                         Forms\Components\TextInput::make('phone_number')
                             ->tel()
-                            ->maxLength(255),
+                            ->maxLength(255)
+                            ->unique('cooperatives', 'phone_number')
+                            ->required()
+                            ->default(null),
                         Forms\Components\TextInput::make('email')
                             ->email()
-                            ->maxLength(255),
-                        Forms\Components\TextInput::make('website')
-                            ->maxLength(255),
-                        Forms\Components\TextInput::make('account_number')
-                            ->maxLength(255),
-                        Forms\Components\TextInput::make('address')
-                            ->maxLength(255),
+                            ->required()
+                            ->maxLength(255)
+                            ->default(null),
                         MarkdownEditor::make('description')
                             ->required()
                             ->label("Description"),
                         Forms\Components\FileUpload::make('logo')
                             ->directory('cooperative')
                             ->image()
-                            ->label('Cooperative image')
-                            ->required(),
-                    ])
+                            ->label('Cooperative Image'),
+                        // Forms\Components\TextInput::make('status')
+                        //     ->required()
+                        //     ->maxLength(255)
+                        //     ->default('active'),
 
+                        Forms\Components\TextInput::make('website')
+                            ->maxLength(255)
+                            ->label("Website URL")
+                            ->url()
+                            ->default(null),
+                        // Forms\Components\TextInput::make('account_number')
+                        //     ->maxLength(255)
+                        //     ->default(null),
+                        Forms\Components\TextInput::make('address')
+                            ->maxLength(255)
+                            ->default(null),
+
+                    ])
             ]);
     }
 
@@ -85,20 +91,35 @@ class CooperativeResource extends Resource
                     ->sortable()
                     ->toggleable()
                     ->label("Cooperative Name"),
+                Tables\Columns\TextColumn::make('account_number')
+                    ->searchable()
+                    ->toggleable()
+                    ->label("Account Number")
+                    ->sortable()
+                    ->copyable(),
+                Tables\Columns\TextColumn::make('phone_number')
+                    ->searchable()
+                    ->toggleable()
+                    ->label("Phone Number")
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('email')
+                    ->searchable()
+                    ->toggleable()
+                    ->label("Email")
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('description')
                     ->searchable()
                     ->sortable()
                     ->toggleable()
                     ->label("Description"),
                 Tables\Columns\TextColumn::make('status')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('phone_number')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('email')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable()
+                    ->label("Status")
+                    ->badge(fn (Cooperative $record): string => $record->status === 'active' ? 'success' : 'danger')
+                    ->color(fn (Cooperative $record): string => $record->status === 'active' ? 'success' : 'danger'),
                 Tables\Columns\TextColumn::make('website')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('account_number')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('address')
                     ->searchable(),
@@ -153,9 +174,6 @@ class CooperativeResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
-                Tables\Actions\ForceDeleteAction::make(),
-                Tables\Actions\RestoreAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -166,10 +184,20 @@ class CooperativeResource extends Resource
             ]);
     }
 
+    public static function getRelations(): array
+    {
+        return [
+            //
+        ];
+    }
+
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ManageCooperatives::route('/'),
+            'index' => Pages\ListCooperatives::route('/'),
+            'create' => Pages\CreateCooperative::route('/create'),
+            'view' => Pages\ViewCooperative::route('/{record}'),
+            'edit' => Pages\EditCooperative::route('/{record}/edit'),
         ];
     }
 

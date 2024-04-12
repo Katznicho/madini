@@ -21,4 +21,10 @@ class Product extends Model
         'cooperative_id',
         'status',
     ];
+
+    //a product belongs to a category
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
 }

@@ -39,55 +39,46 @@ class MinerResource extends Resource
                     $context === 'edit' ? 'Editing miner' : ($context === 'create' ? 'Creating a new miner' : 'Viewing miner')
                 )
                     ->description(fn ($context) => $context === 'edit' ? 'Editing an existing miner record.' : ($context === 'create' ? 'Creating a new miner record.' : 'Viewing a miner record.'))
-                
-                ->schema([
-                    Forms\Components\TextInput::make('name')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('phone_number')
-                    ->tel()
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('email')
-                    ->email()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('address')
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('account_number')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('status')
-                    ->required()
-                    ->maxLength(255)
-                    ->default('active'),
-                    //gender
-                Forms\Components\Select::make('gender')
-                ->required()
-                ->options(
-                    [
-                        'male' => 'Male',
-                        'female' => 'Female',
-                    ]
-                    ),
-                Forms\Components\TextInput::make('miner_id')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('pin')
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('pin_recovery')
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('pin_reset')
-                    ->maxLength(255),
-                Forms\Components\FileUpload::make('profile_picture')
-                    ->directory('miner')
-                    ->image()
-                    ->label('miner profile picture')
-                    ->required(),
+
+                    ->schema([
+                        Forms\Components\TextInput::make('name')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('phone_number')
+                            ->tel()
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\Select::make('gender')
+                            ->required()
+                            ->options(
+                                [
+                                    'male' => 'Male',
+                                    'female' => 'Female',
+                                ]
+                            ),
+                        Forms\Components\Select::make('cooperative_id')
+                            ->relationship('cooperative', 'name')
+                            ->native(false)
+                            ->label("Select Cooperative")
+                            ->preload()
+                            ->searchable()
+                            ->required(),
+
+                        Forms\Components\TextInput::make('email')
+                            ->email()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('address')
+                            ->maxLength(255),
+                        //gender
+
+                        Forms\Components\FileUpload::make('profile_picture')
+                            ->directory('miner')
+                            ->image()
+                            ->label('Miner profile picture')
+
+                    ])
 
 
-                ])
-            
-              
             ]);
     }
 
@@ -97,32 +88,46 @@ class MinerResource extends Resource
 
             ->columns([
                 Tables\Columns\ImageColumn::make('logo')
-                ->label("Cover Image")
-                ->circular(),
+                    ->label("Cover Image")
+                    ->circular(),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable()
                     ->sortable()
                     ->toggleable()
                     ->label("Miner Name"),
                 Tables\Columns\TextColumn::make('phone_number')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('email')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('address')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable()
+                    ->label("Phone Number"),
                 Tables\Columns\TextColumn::make('account_number')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable()
+                    ->copyable()
+                    ->toggleable()
+                    ->label("Account Number"),
+                Tables\Columns\TextColumn::make('cooperative.name')
+                    ->searchable()
+                    ->sortable()
+                    ->copyable()
+                    ->toggleable()
+                    ->label("Coperative Name"),
+                Tables\Columns\TextColumn::make('email')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable()
+                    ->label("Email Address"),
+                Tables\Columns\TextColumn::make('address')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable()
+                    ->label("Address")
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('status')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('miner_id')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('pin')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('pin_recovery')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('pin_reset')
-                    ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -135,41 +140,41 @@ class MinerResource extends Resource
             ->filters([
                 // Tables\Filters\TrashedFilter::make(),
                 Filter::make('is_sponsored')
-                ->query(fn (Builder $query): Builder => $query->where('is_sponsored', true))
-                ->indicator(fn (Builder $query): int => $query->where('is_sponsored', true)->count())
-                ->toggle()
-                ->label('Sponsored'),
-            Filter::make('created_at')
-                ->form([
-                    DatePicker::make('created_from'),
-                    DatePicker::make('created_until'),
-                ])
-                ->query(function (Builder $query, array $data): Builder {
-                    return $query
-                        ->when(
-                            $data['created_from'],
-                            fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
-                        )
-                        ->when(
-                            $data['created_until'],
-                            fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
-                        );
-                })
-                ->indicateUsing(function (array $data): array {
-                    $indicators = [];
+                    ->query(fn (Builder $query): Builder => $query->where('is_sponsored', true))
+                    ->indicator(fn (Builder $query): int => $query->where('is_sponsored', true)->count())
+                    ->toggle()
+                    ->label('Sponsored'),
+                Filter::make('created_at')
+                    ->form([
+                        DatePicker::make('created_from'),
+                        DatePicker::make('created_until'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['created_from'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
+                            )
+                            ->when(
+                                $data['created_until'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
+                            );
+                    })
+                    ->indicateUsing(function (array $data): array {
+                        $indicators = [];
 
-                    if ($data['from'] ?? null) {
-                        $indicators[] = Indicator::make('Created from ' . Carbon::parse($data['from'])->toFormattedDateString())
-                            ->removeField('from');
-                    }
+                        if ($data['from'] ?? null) {
+                            $indicators[] = Indicator::make('Created from ' . Carbon::parse($data['from'])->toFormattedDateString())
+                                ->removeField('from');
+                        }
 
-                    if ($data['until'] ?? null) {
-                        $indicators[] = Indicator::make('Created until ' . Carbon::parse($data['until'])->toFormattedDateString())
-                            ->removeField('until');
-                    }
+                        if ($data['until'] ?? null) {
+                            $indicators[] = Indicator::make('Created until ' . Carbon::parse($data['until'])->toFormattedDateString())
+                                ->removeField('until');
+                        }
 
-                    return $indicators;
-                }),
+                        return $indicators;
+                    }),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),

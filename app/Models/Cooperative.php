@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Cooperative extends Model
 {
     use HasFactory;
-    
+
     protected $casts = [
         'description' => 'array',
     ];
@@ -24,4 +24,10 @@ class Cooperative extends Model
         'account_number',
         'address',
     ];
+
+    //a cooperative has many miners
+    public function miners()
+    {
+        return $this->hasMany(Miner::class);
+    }
 }

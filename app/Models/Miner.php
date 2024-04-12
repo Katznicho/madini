@@ -21,7 +21,17 @@ class Miner extends Model
         'pin',
         'pin_recovery',
         'pin_reset',
-        'cooperative_id',   
+        'cooperative_id',
     ];
-}
 
+    protected $casts = [
+        'description' => 'array',
+        'gender' => 'array',
+    ];
+
+    // a miner belongs to a cooperative
+    public function cooperative()
+    {
+        return $this->belongsTo(Cooperative::class);
+    }
+}

@@ -4,8 +4,71 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "278599217b5f4666739343257407a454",
+    "content-hash": "1928e2a152c946d957014081969e1400",
     "packages": [
+        {
+            "name": "abanoubnassem/filament-phone-field",
+            "version": "v0.0.6",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/AbanoubNassem/filament-phone-field.git",
+                "reference": "47d7c5e70e71b9d00021f892fcb8ca7863110ade"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/AbanoubNassem/filament-phone-field/zipball/47d7c5e70e71b9d00021f892fcb8ca7863110ade",
+                "reference": "47d7c5e70e71b9d00021f892fcb8ca7863110ade",
+                "shasum": ""
+            },
+            "require": {
+                "filament/forms": "^2.16|^3.0-stable|^3.2.51",
+                "illuminate/contracts": "^9.0|^10.0|^11.0",
+                "php": "^8.0|^8.1|^8.2|^8.3",
+                "spatie/laravel-package-tools": "^1.13.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "AbanoubNassem\\FilamentPhoneField\\FilamentPhoneFieldServiceProvider"
+                    ],
+                    "aliases": {
+                        "FilamentPhoneField": "AbanoubNassem\\FilamentPhoneField\\Facades\\FilamentPhoneField"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "AbanoubNassem\\FilamentPhoneField\\": "src",
+                    "AbanoubNassem\\FilamentPhoneField\\Database\\Factories\\": "database/factories"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Abanoub Nassem",
+                    "email": "abanoubnassemmousa@gmail.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Provides a Phone Input field for the Filament Forms, works in Admin-Panel and Forntend-Forms",
+            "homepage": "https://github.com/abanoubnassem/filament-phone-field",
+            "keywords": [
+                "AbanoubNassem",
+                "International Telephone Input",
+                "filament-phone-field",
+                "intl-tel-input",
+                "laravel"
+            ],
+            "support": {
+                "issues": "https://github.com/AbanoubNassem/filament-phone-field/issues",
+                "source": "https://github.com/AbanoubNassem/filament-phone-field/tree/v0.0.6"
+            },
+            "time": "2024-03-18T06:09:41+00:00"
+        },
         {
             "name": "anourvalar/eloquent-serialize",
             "version": "1.2.22",
