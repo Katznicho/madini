@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Filament\Resources;
+namespace App\Filament\Cooperative\Resources;
 
-use App\Filament\Resources\TransactionResource\Pages;
-use App\Filament\Resources\TransactionResource\RelationManagers;
-use App\Models\Transaction;
+use App\Filament\Cooperative\Resources\OrderResource\Pages;
+use App\Filament\Cooperative\Resources\OrderResource\RelationManagers;
+use App\Models\Order;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -13,46 +13,43 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class TransactionResource extends Resource
+class OrderResource extends Resource
 {
-    protected static ?string $model = Transaction::class;
+    protected static ?string $model = Order::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-    protected static ?string $navigationGroup = 'Payments';
+
+    protected static ?string $navigationGroup = 'Orders';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('type')
+                Forms\Components\TextInput::make('user_id')
+                    ->required()
+                    ->numeric(),
+                Forms\Components\TextInput::make('cooperative_id')
+                    ->required()
+                    ->numeric(),
+                Forms\Components\TextInput::make('delivery_address_id')
+                    ->required()
+                    ->numeric(),
+                Forms\Components\TextInput::make('total_cost')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('amount')
+                Forms\Components\TextInput::make('purchase_cost')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('phone_number')
-                    ->tel()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('payment_mode')
+                Forms\Components\TextInput::make('delivery_cost')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('payment_method')
-                    ->maxLength(255),
-                Forms\Components\Textarea::make('description')
-                    ->columnSpanFull(),
-                Forms\Components\TextInput::make('reference')
+                Forms\Components\TextInput::make('quantity')
                     ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('status')
                     ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('order_tracking_id')
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('OrderNotificationType')
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('user_id')
-                    ->required()
-                    ->numeric(),
+                    ->maxLength(255)
+                    ->default('Pending'),
             ]);
     }
 
@@ -60,30 +57,25 @@ class TransactionResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('type')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('amount')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('phone_number')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('payment_mode')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('payment_method')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('reference')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('status')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('order_tracking_id')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('OrderNotificationType')
-                    ->searchable(),
                 Tables\Columns\TextColumn::make('user_id')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('cooperative_id')
                     ->numeric()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('delivery_address_id')
+                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('total_cost')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('purchase_cost')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('delivery_cost')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('quantity')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('status')
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -119,10 +111,10 @@ class TransactionResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListTransactions::route('/'),
-            'create' => Pages\CreateTransaction::route('/create'),
-            'view' => Pages\ViewTransaction::route('/{record}'),
-            'edit' => Pages\EditTransaction::route('/{record}/edit'),
+            'index' => Pages\ListOrders::route('/'),
+            'create' => Pages\CreateOrder::route('/create'),
+            'view' => Pages\ViewOrder::route('/{record}'),
+            'edit' => Pages\EditOrder::route('/{record}/edit'),
         ];
     }
 
@@ -132,5 +124,7 @@ class TransactionResource extends Resource
             ->withoutGlobalScopes([
                 SoftDeletingScope::class,
             ]);
+            // ->where('cooperative_id', auth()->user()->cooperative->id);
+            
     }
 }

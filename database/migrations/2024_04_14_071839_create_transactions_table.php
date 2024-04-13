@@ -24,6 +24,8 @@ return new class extends Migration
             $table->string('order_tracking_id')->nullable();
             $table->string('OrderNotificationType')->nullable();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreignId('cooperative_id')->nullable()->constrained()->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreignId('order_id')->nullable()->constrained()->cascadeOnDelete()->cascadeOnUpdate();
 
             $table->timestamps();
         });

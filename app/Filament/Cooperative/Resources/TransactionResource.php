@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Filament\Resources;
+namespace App\Filament\Cooperative\Resources;
 
-use App\Filament\Resources\TransactionResource\Pages;
-use App\Filament\Resources\TransactionResource\RelationManagers;
+use App\Filament\Cooperative\Resources\TransactionResource\Pages;
+use App\Filament\Cooperative\Resources\TransactionResource\RelationManagers;
 use App\Models\Transaction;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -18,7 +18,9 @@ class TransactionResource extends Resource
     protected static ?string $model = Transaction::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-    protected static ?string $navigationGroup = 'Payments';
+
+
+    protected static ?string $navigationGroup = 'Transactions';
 
     public static function form(Form $form): Form
     {
@@ -53,9 +55,14 @@ class TransactionResource extends Resource
                 Forms\Components\TextInput::make('user_id')
                     ->required()
                     ->numeric(),
+                Forms\Components\TextInput::make('cooperative_id')
+                    ->numeric(),
+                Forms\Components\TextInput::make('order_id')
+                    ->numeric(),
             ]);
     }
 
+  
     public static function table(Table $table): Table
     {
         return $table
@@ -132,5 +139,7 @@ class TransactionResource extends Resource
             ->withoutGlobalScopes([
                 SoftDeletingScope::class,
             ]);
+            // ->where('cooperative_id', auth()->user()->cooperative->id);
+            
     }
 }

@@ -10,14 +10,36 @@ class Transaction extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name',
+        'type',
+        'amount',
         'phone_number',
-        'email',
-        'address',
+        'payment_mode',
+        'payment_method',
+        'description',
+        'reference',
         'status',
-        'transaction_id',
-        'pin',
-        'pin_recovery',
+        'order_tracking_id',
+        'OrderNotificationType',
+        'cooperative_id', 
+        'user_id',
+        'order_id'
+
         
     ];
+
+    public function order()
+    {
+        return $this->belongsTo(Order::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function cooperative()
+    {
+        return $this->belongsTo(Cooperative::class);
+    }
+
 }
