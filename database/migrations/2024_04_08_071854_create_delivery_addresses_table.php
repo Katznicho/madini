@@ -13,6 +13,15 @@ return new class extends Migration
     {
         Schema::create('delivery_addresses', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->string('name');
+            $table->string('phone_number');
+            $table->string('address');
+            $table->string("address_type");
+            $table->string('city');
+            $table->string('state')->nullable();
+            $table->string('country')->nullable();
+            $table->string('postal_code')->nullable();
             $table->timestamps();
         });
     }

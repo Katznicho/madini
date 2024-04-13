@@ -9,15 +9,33 @@ class Order extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'name',
-        'phone_number',
-        'email',
-        'address',
-        'status',
-        'order_id',
-        'pin',
-        'pin_recovery',
-        
-    ];
+   protected $fillable = [
+       'user_id',
+       'total_cost',
+       'purchase_cost',
+       'delivery_cost',
+       'quantity',
+       'status',
+       'delivery_address_id',
+   ];
+
+   public function user()
+   {
+       return $this->belongsTo(User::class);
+   }
+
+   public function items()
+   {
+       return $this->hasMany(OrderItem::class);
+   }
+
+   public function deliveryAddress()
+   {
+       return $this->belongsTo(DeliveryAddress::class);
+   }
+
+   public function cooperative()
+   {
+       return $this->belongsTo(Cooperative::class);
+   }
 }

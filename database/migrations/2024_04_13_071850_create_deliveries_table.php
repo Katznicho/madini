@@ -13,6 +13,9 @@ return new class extends Migration
     {
         Schema::create('deliveries', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreignId("cooperative_id")->references("id")->on("cooperatives")->onDelete("cascade");
+            $table->foreignId("oder_id")->references("id")->on("orders")->onDelete("cascade");
             $table->timestamps();
         });
     }
