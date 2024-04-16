@@ -33,4 +33,10 @@ class Product extends Model
     {
         return $this->belongsTo(Cooperative::class);
     }
+
+    public function getImageUrlAttribute($value)
+    {
+        $imagePath = $this->attributes['image'];
+        return $imagePath ? "http://127.0.0.1:8001/storage/{$imagePath}" : null;
+    }
 }
