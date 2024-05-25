@@ -16,7 +16,5 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
     include_once __DIR__ . '/custom/products_routes.php';
-    Route::get("test", function () {
-        return "Test";
-    });
+    include_once __DIR__ . '/custom/payment_routes.php';
 });

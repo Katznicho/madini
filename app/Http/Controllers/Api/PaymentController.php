@@ -32,8 +32,7 @@ class PaymentController extends Controller
             //$amount, $phone, $callback
             $request->validate([
                 'amount' => 'required|numeric',
-                'phone_number' => 'required|string',
-                'amount' => 'required',
+                // 'phone_number' => 'required|string',
                 'quantity' => 'required|numeric',
             ]);
 
@@ -41,6 +40,7 @@ class PaymentController extends Controller
             $user_id = 3;
 
             $user_id = User::find($user_id)->id;
+
             $user_name = User::find($user_id)->name;
             $user_email = User::find($user_id)->email;
             $user_phone = User::find($user_id)->phone_number;
@@ -102,7 +102,7 @@ class PaymentController extends Controller
                     return response()->json(['success' => true, 'data' => $res]);
                 } else {
                     // dd($res);
-                    return response()->json(['success' => false, 'message' =>"Something went wrong!Please try again later"]);
+                    return response()->json(['success' => false, 'message' => "Something went wrong!Please try again later"]);
                 }
             }
         } catch (\Exception $th) {
